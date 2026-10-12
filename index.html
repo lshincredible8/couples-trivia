@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Couple's Trivia</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- PeerJS CDN -->
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-rose-100 via-pink-50 to-purple-100 min-h-screen text-slate-800 flex flex-col justify-between p-4 sm:p-6">
+
+<!-- Header -->
+<header class="w-full max-w-md mx-auto text-center py-4">
+    <h1 class="text-3xl font-extrabold text-rose-600 tracking-tight">💕 Couple's Sync</h1>
+    <p class="text-sm text-slate-500 mt-1">How well do you know each other?</p>
+</header>
+
+<!-- Main Container -->
+<main class="w-full max-w-md mx-auto bg-white/80 backdrop-blur-md rounded-3xl shadow-xl border border-white/40 p-6 sm:p-8 my-auto">
+
+    <!-- SCREEN 1: LOBBY -->
+    <div id="screen-lobby" class="space-y-6">
+        <div class="text-center space-y-2">
+            <h2 class="text-xl font-bold text-slate-700">Connect with your Partner</h2>
+            <p class="text-sm text-slate-500">Create a room or join your partner's room to start playing.</p>
+        </div>
+
+        <div class="space-y-4 pt-2">
+            <button id="btn-create-room" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-semibold py-3.5 px-6 rounded-2xl shadow-lg shadow-rose-500/30 transition-all active:scale-95">
+                Create Room (Host)
+            </button>
+
+            <div class="relative flex py-2 items-center">
+                <div class="flex-grow border-t border-slate-200"></div>
+                <span class="flex-shrink mx-4 text-slate-400 text-xs font-medium uppercase tracking-wider">or join</span>
+                <div class="flex-grow border-t border-slate-200"></div>
+            </div>
+
+            <div class="space-y-3">
+                <input type="text" id="input-room-id" placeholder="Paste partner's room code..." class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-center font-mono text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 focus:bg-white transition-all">
+                <button id="btn-join-room" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-semibold py-3.5 px-6 rounded-2xl shadow-lg shadow-slate-900/20 transition-all active:scale-95">
+                    Join Room
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCREEN 2: WAITING FOR CONNECTION -->
+    <div id="screen-waiting" class="hidden text-center space-y-6 py-6">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-rose-100 text-rose-500 rounded-full animate-pulse">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        </div>
+        <div class="space-y-2">
+            <h2 class="text-xl font-bold text-slate-700">Waiting for Partner...</h2>
+            <p class="text-sm text-slate-500">Share this code with your partner:</p>
+        </div>
+        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex items-center justify-between">
+            <span id="display-room-id" class="font-mono font-bold text-rose-600 text-lg tracking-wider select-all">Generating...</span>
+            <button id="btn-copy" class="text-xs font-semibold bg-white border border-slate-200 text-slate-600 px-3 py-2 rounded-xl hover:bg-slate-50 active:scale-95 transition-all">Copy</button>
+        </div>
+    </div>
+
+    <!-- SCREEN 2.5: CATEGORY SELECTION -->
+    <div id="screen-category" class="hidden space-y-6">
+        <div id="host-category-view" class="space-y-5">
+            <div class="text-center space-y-1">
+                <h2 class="text-xl font-bold text-slate-700">Select a Category</h2>
+                <p class="text-sm text-slate-500">Pick a category for this game session:</p>
+            </div>
+
+            <div class="space-y-2.5 max-h-72 overflow-y-auto pr-1">
+                <button class="btn-category w-full bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 font-bold py-3 px-4 rounded-2xl transition-all text-left flex items-center justify-between" data-category="Sweet">
+                    <span>💖 Sweet</span>
+                    <span class="text-xs font-normal text-rose-500 bg-white/80 px-2 py-0.5 rounded-full">250 Qs</span>
+                </button>
+                <button class="btn-category w-full bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-700 font-bold py-3 px-4 rounded-2xl transition-all text-left flex items-center justify-between" data-category="Memories">
+                    <span>📸 Memories</span>
+                    <span class="text-xs font-normal text-amber-500 bg-white/80 px-2 py-0.5 rounded-full">250 Qs</span>
+                </button>
+                <button class="btn-category w-full bg-sky-50 hover:bg-sky-100 border border-sky-200 text-sky-700 font-bold py-3 px-4 rounded-2xl transition-all text-left flex items-center justify-between" data-category="Travel">
+                    <span>✈️ Travel</span>
+                    <span class="text-xs font-normal text-sky-500 bg-white/80 px-2 py-0.5 rounded-full">250 Qs</span>
+                </button>
+                <button class="btn-category w-full bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 font-bold py-3 px-4 rounded-2xl transition-all text-left flex items-center justify-between" data-category="General Partner Knowledge">
+                    <span>🧠 General Partner Knowledge</span>
+                    <span class="text-xs font-normal text-purple-500 bg-white/80 px-2 py-0.5 rounded-full">250 Qs</span>
+                </button>
+                <button class="btn-category w-full bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 font-bold py-3 px-4 rounded-2xl transition-all text-left flex items-center justify-between" data-category="Spicy">
+                    <span>🔥 Spicy</span>
+                    <span class="text-xs font-normal text-red-500 bg-white/80 px-2 py-0.5 rounded-full">250 Qs</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="guest-category-view" class="hidden text-center space-y-4 py-8">
+            <div class="inline-flex items-center justify-center w-12 h-12 bg-rose-100 text-rose-500 rounded-full animate-bounce">
+                ✨
+            </div>
+            <h2 class="text-xl font-bold text-slate-700">Connected!</h2>
+            <p class="text-sm text-slate-500">Waiting for host to pick a category...</p>
+        </div>
+    </div>
+
+    <!-- SCREEN 3: GAMEPLAY -->
+    <div id="screen-game" class="hidden space-y-6">
+        <div class="flex items-center justify-between text-xs font-bold text-slate-400 uppercase tracking-wider">
+            <span id="question-counter">Question 1 of 10</span>
+            <span id="category-badge" class="text-rose-500 bg-rose-50 border border-rose-100 px-2.5 py-1 rounded-full font-extrabold">Sweet</span>
+            <span id="score-counter" class="text-slate-600 bg-slate-100 px-2.5 py-1 rounded-full">Score: 0</span>
+        </div>
+
+        <div class="bg-rose-50/50 border border-rose-100 rounded-2xl p-5 text-center">
+            <h3 id="question-text" class="text-lg font-bold text-slate-800 leading-snug">Loading question...</h3>
+        </div>
+
+        <div class="space-y-4">
+            <div>
+                <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Your Answer</label>
+                <input type="text" id="input-my-answer" placeholder="Type your answer..." class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 focus:bg-white transition-all">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Your Guess for Partner</label>
+                <input type="text" id="input-partner-guess" placeholder="What will they say?" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 focus:bg-white transition-all">
+            </div>
+        </div>
+
+        <button id="btn-submit" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-semibold py-3.5 px-6 rounded-2xl shadow-lg shadow-rose-500/30 transition-all active:scale-95">
+            Lock In Answers
+        </button>
+        <p id="waiting-peer-status" class="text-center text-xs font-medium text-slate-400 hidden">Waiting for partner to lock in...</p>
+    </div>
+
+    <!-- SCREEN 4: ROUND RESULTS -->
+    <div id="screen-results" class="hidden space-y-6">
+        <div class="text-center space-y-1">
+            <h2 class="text-xl font-bold text-slate-700">Round Results</h2>
+            <p id="round-score-msg" class="text-sm font-semibold text-rose-500">+1 Point!</p>
+        </div>
+
+        <div class="space-y-3">
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-1">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">You</span>
+                <p class="text-sm font-medium text-slate-700">Answer: <span id="res-my-answer" class="font-bold text-slate-900"></span></p>
+                <p class="text-sm font-medium text-slate-700">Guessed Partner: <span id="res-my-guess" class="font-bold text-slate-900"></span></p>
+            </div>
+
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-1">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Partner</span>
+                <p class="text-sm font-medium text-slate-700">Answer: <span id="res-partner-answer" class="font-bold text-slate-900"></span></p>
+                <p class="text-sm font-medium text-slate-700">Guessed You: <span id="res-partner-guess" class="font-bold text-slate-900"></span></p>
+            </div>
+        </div>
+
+        <button id="btn-next" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-semibold py-3.5 px-6 rounded-2xl shadow-lg shadow-rose-500/30 transition-all active:scale-95">
+            Next Question
+        </button>
+    </div>
+
+    <!-- SCREEN 5: END GAME SUMMARY -->
+    <div id="screen-gameover" class="hidden space-y-6">
+        <div class="text-center space-y-2">
+            <div class="inline-flex items-center justify-center w-14 h-14 bg-rose-100 text-rose-500 text-2xl rounded-full">
+                🎉
+            </div>
+            <h2 class="text-2xl font-extrabold text-slate-800">Game Complete!</h2>
+            <p id="gameover-score-text" class="text-lg font-bold text-rose-600">Total Score: 0 / 20</p>
+            <p id="gameover-summary-msg" class="text-xs text-slate-500">You guys know each other so well!</p>
+        </div>
+
+        <!-- Full Game History -->
+        <div class="space-y-3 max-h-64 overflow-y-auto pr-1">
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider sticky top-0 bg-white/95 py-1">Answer Recap</h3>
+            <div id="history-container" class="space-y-3"></div>
+        </div>
+
+        <button id="btn-restart" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-semibold py-3.5 px-6 rounded-2xl shadow-lg shadow-rose-500/30 transition-all active:scale-95">
+            Play Another Category
+        </button>
+    </div>
+
+</main>
+
+<!-- Footer -->
+<footer class="w-full max-w-md mx-auto text-center text-xs text-slate-400 py-4">
+    Built with PeerJS & Tailwind CSS
+</footer>
+
+<!-- Game Logic & 1250 Total Questions Database -->
+<script>
+    const allQuestionsData = {
+        "Sweet": [
+            "What is your absolute favorite thing about our relationship?",
+            "When did you first realize you had feelings for me?",
+            "What small gesture do I do that secretly makes your day?",
+            "What is your favorite compliment you've ever received from me?",
+            "What is one cute habit of mine that you love?",
+            "What do you think is our biggest strength as a couple?",
+            "What is your favorite way to be comforted when you're sad?",
+            "What makes you feel most loved and appreciated?",
+            "If you had to describe our love story in three words, what would they be?",
+            "What is your favorite physical feature of mine?",
+            "What was going through your mind during our very first kiss?",
+            "What is one romantic date idea you've always wanted to try with me?",
+            "What song makes you think of me whenever you hear it?",
+            "What is your favorite morning or nighttime routine we share?",
+            "When do you feel most connected to me?",
+            "What is something I do that instantly puts a smile on your face?",
+            "What is your favorite pet name or nickname we use?",
+            "What is a romantic movie scene you wish we could recreate?",
+            "What is one thing I've taught you about love or relationships?",
+            "What is your favorite photograph or selfie of the two of us?",
+            "How do you prefer to receive affection (words, hugs, gifts, quality time)?",
+            "What is one promise you want us to keep forever?",
+            "What is the sweetest thing I've ever done for you out of nowhere?",
+            "What made you fall in love with me?",
+            "What is your dream way to celebrate our next anniversary?",
+            "What is the most thoughtful gift I've ever given you?",
+            "How does holding my hand make you feel?",
+            "What is a dream future home detail you picture us having together?",
+            "What makes you feel safest when you are with me?",
+            "What is your favorite thing we do on a cozy lazy Sunday?",
+            "What was your absolute favorite date we have ever been on?",
+            "What is something you love telling your friends about me?",
+            "What is a comforting phrase you love hearing from me?",
+            "What makes our bond completely unique compared to anyone else?",
+            "What is a future milestone you are most excited to experience together?",
+            "What is a small text message from me that always brightens your morning?",
+            "What is your favorite memory of us laughing together until we cried?",
+            "What do you love most about the way we communicate?",
+            "What is a characteristic of mine that inspires you to be better?",
+            "What is your favorite way for us to spend a quiet evening at home?",
+            "What was your favorite surprise I ever pulled off for you?",
+            "What is a song that always reminds you of our early days?",
+            "What is something you secretly thank your lucky stars for about us?",
+            "What is your favorite tradition we have started together?",
+            "What is the most romantic place you've ever imagined us visiting?",
+            "What is a moment where you felt overwhelmingly proud of us?",
+            "What is your favorite thing about waking up next to me?",
+            "What is a little daily routine of ours that brings you joy?",
+            "What is your favorite way for us to show appreciation for each other?",
+            "What is something you appreciate about how we handle disagreements?",
+            "What is your favorite thing about my personality?",
+            "What is a dream goal you want us to accomplish side-by-side?",
+            "What is the warmest memory you have of us sharing a blanket?",
+            "What is a favorite meal we've shared by candlelight or sunset?",
+            "What is a nickname you have for me in your head that you've never shared?",
+            "What is something I do when I'm focused that you find adorable?",
+            "What is the most romantic thing someone could ever do for you, and how close do I get?",
+            "What is a scent of mine that you find deeply comforting?",
+            "What is a memory of us dancing or swaying together?",
+            "What is a future adventure you can't wait to plan with me?",
+            "What is a favorite inside joke that warms your heart?",
+            "What makes you feel most cherished on your birthday or holidays?",
+            "What is a compliment you wish I gave you more often?",
+            "What is your favorite photo of me that you have saved on your phone?",
+            "What is a moment we shared outdoors that felt magical?",
+            "What is something you love about the way I look at you?",
+            "What is your favorite way we say goodbye when parting ways?",
+            "What is a quality of mine that makes you feel secure for the future?",
+            "What is the most comforting thing about my embrace?",
+            "What is a small sacrifice you're glad we made for each other?",
+            "What is your favorite memory of us cooking or baking together?",
+            "What is something you love whispering into my ear?",
+            "What is a dream future holiday tradition you want us to establish?",
+            "What is a moment when you realized I truly cared about your well-being?",
+            "What is your favorite way for us to celebrate good news?",
+            "What is something that reminds you of our love when we are apart?",
+            "What is a favorite text conversation we've had that you screenshotted?",
+            "What is a comforting touch of mine that instantly calms your nerves?",
+            "What is a future pet or family addition you daydream about with me?",
+            "What is the most affectionate nickname you've given me?",
+            "What is a sweet habit you've picked up from me?",
+            "What is a favorite memory of us sharing a dessert?",
+            "What is something you love about how we support each other's dreams?",
+            "What is a dream car or road trip vehicle you picture us driving together?",
+            "What is a memory of us watching the sunrise or sunset together?",
+            "What is a favorite story you tell people about how we met?",
+            "What is something that makes you feel deeply understood by me?",
+            "What is a romantic gesture you'd love to surprise me with?",
+            "What is your favorite memory of us walking hand-in-hand?",
+            "What is a quality of mine that makes you smile on a hard day?",
+            "What is a favorite song lyric that reminds you of our relationship?",
+            "What is a moment when you felt like the luckiest person in the world with me?",
+            "What is a sweet tradition we should do every single week?",
+            "What is your favorite memory of us opening gifts together?",
+            "What is something you love about the sound of my laugh?",
+            "What is a dream home aesthetic you want us to build together?",
+            "What is a memory of us sharing an umbrella in the rain?",
+            "What is a quality of mine that you admire most in leaders?",
+            "What is your favorite memory of us stargazing together?",
+            "What is a sweet note or letter you've kept from me?",
+            "What is a dream weekend getaway you'd want us to take spontaneously?",
+            "What is a memory of us singing along loudly in the car?",
+            "What is something you love about how we greet each other after a long day?",
+            "What is a favorite photo album or digital folder of us you revisit?",
+            "What is a quality of mine that makes you feel peaceful?",
+            "What is a dream outdoor date you want us to experience?",
+            "What is a memory of us sharing a cup of coffee or tea?",
+            "What is something you love about how we solve problems together?",
+            "What is a favorite memory of us wearing matching or complementary outfits?",
+            "What is a quality of mine that brings out your best self?",
+            "What is a dream future anniversary trip you want us to take?",
+            "What is a memory of us laughing at a silly movie together?",
+            "What is something you love about my voice on the phone?",
+            "What is a favorite memory of us enjoying a picnic or park day?",
+            "What is a quality of mine that makes you feel proud to introduce me to others?",
+            "What is a dream future hobby you want us to learn together?",
+            "What is a memory of us building something or setting up a room together?",
+            "What is something you love about how we celebrate each other's wins?",
+            "What is a favorite memory of us sharing a blanket on the couch?",
+            "What is a quality of mine that makes you feel unconditionally accepted?",
+            "What is a dream future family vacation you picture us taking?",
+            "What is a memory of us exploring a cute local bookstore or market together?",
+            "What is something you love about how we listen to each other?",
+            "What is a favorite memory of us watching a meteor shower or fireworks?",
+            "What is a quality of mine that makes you feel inspired every day?",
+            "What is a dream future project you want us to collaborate on?",
+            "What is a memory of us taking a spontaneous walk in the neighborhood?",
+            "What is something you love about how we show kindness to others together?",
+            "What is a favorite memory of us enjoying breakfast in bed?",
+            "What is a quality of mine that makes you feel deeply valued?",
+            "What is a dream future lazy Sunday you look forward to having with me?",
+            "What is a memory of us laughing over a burnt meal or kitchen mishap?",
+            "What is something you love about how we keep our romance alive?",
+            "What is a favorite memory of us listening to a vinyl record or playlist together?",
+            "What is a quality of mine that makes you feel protected and safe?",
+            "What is a dream future sunset picnic spot you want us to visit?",
+            "What is a memory of us sharing an ice cream cone on a hot day?",
+            "What is something you love about how we care for each other when sick?",
+            "What is a favorite memory of us dancing in the kitchen?",
+            "What is a quality of mine that makes you feel completely at home?",
+            "What is a dream future vacation cabin you want us to rent?",
+            "What is a memory of us finding a hidden gem local spot together?",
+            "What is something you love about how we share our deepest secrets?",
+            "What is a favorite memory of us watching home videos or old photos?",
+            "What is a quality of mine that makes you feel eternally grateful?",
+            "What is a dream future candlelit dinner menu you want us to cook?",
+            "What is a memory of us cheering each other on during a tough task?",
+            "What is something you love about how we hold space for each other's emotions?",
+            "What is a favorite memory of us wrapping up warm in heavy winter coats?",
+            "What is a quality of mine that makes you feel like you can conquer the world?",
+            "What is a dream future beach bonfire night you want us to have?",
+            "What is a memory of us whispering secrets across a crowded room?",
+            "What is something you love about how we value each other's opinions?",
+            "What is a favorite memory of us enjoying a quiet museum or gallery stroll?",
+            "What is a quality of mine that makes you feel deeply respected?",
+            "What is a dream future treehouse or cabin retreat you want us to book?",
+            "What is a memory of us feeding stray animals or admiring pets together?",
+            "What is something you love about how we encourage each other's individual goals?",
+            "What is a favorite memory of us sharing a warm pastry on a chilly morning?",
+            "What is a quality of mine that makes you feel wonderfully pampered?",
+            "What is a dream future vineyard or orchard tour you want us to take?",
+            "What is a memory of us playing a cooperative board game together?",
+            "What is something you love about how we express gratitude to each other daily?",
+            "What is a favorite memory of us watching the clouds roll by on a grassy hill?",
+            "What is a quality of mine that makes you feel immensely proud?",
+            "What is a dream future botanical garden stroll you want us to take?",
+            "What is a memory of us helping each other get ready for a big event?",
+            "What is something you love about how we make each other laugh when stressed?",
+            "What is a favorite memory of us sharing a giant bowl of popcorn?",
+            "What is a quality of mine that makes you feel like the luckiest human alive?",
+            "What is a dream future luxury spa day you want us to enjoy together?",
+            "What is a memory of us navigating a new city maze together successfully?",
+            "What is something you love about how we build our future brick by brick?",
+            "What is a favorite memory of us watching lightning storms from a safe window?",
+            "What is a quality of mine that makes you feel unconditionally loved no matter what?",
+            "What is a dream future hot spring getaway you want us to experience?",
+            "What is a memory of us sharing a heartfelt hug after a long separation?",
+            "What is something you love about how we cherish our private moments?",
+            "What is a favorite memory of us painting or crafting something silly together?",
+            "What is a quality of mine that makes you feel like time stops when we embrace?",
+            "What is a dream future lighthouse visit you want us to take?",
+            "What is a memory of us celebrating a small milestone with our favorite treat?",
+            "What is something you love about how we balance each other's energies?",
+            "What is a favorite memory of us reading books side by side in silence?",
+            "What is a quality of mine that makes you feel completely serene?",
+            "What is a dream future balcony dinner with a view you want us to have?",
+            "What is a memory of us cheering together at a live sports game or concert?",
+            "What is something you love about how we bring out the best in each other?",
+            "What is a favorite memory of us watching autumn leaves fall together?",
+            "What is a quality of mine that makes you feel like you are home wherever we go?",
+            "What is a dream future fjord or mountain valley exploration you want us to do?",
+            "What is a memory of us writing down our dreams in a shared journal?",
+            "What is something you love about how we honor our commitment every single day?",
+            "What is a favorite memory of us sharing a milkshake with two straws?",
+            "What is a quality of mine that makes you feel endlessly fascinated?",
+            "What is a dream future island getaway where we can disconnect completely?",
+            "What is a memory of us waking up early just to watch the quiet world wake up?",
+            "What is something you love about how we make everyday life feel like an adventure?",
+            "What is a favorite memory of us listening to rain patter on the roof while cuddling?",
+            "What is a quality of mine that makes you feel like our love story is the best one ever told?"
+        ],
+        "Memories": [
+            "What is your favorite memory from our very first date?",
+            "What was the most hilarious or unexpected thing that happened on one of our dates?",
+            "What is your favorite trip or weekend getaway we've taken together?",
+            "What is one inside joke we have that never fails to make you laugh?",
+            "What was the first gift I ever gave you, and how did you feel?",
+            "What is your favorite holiday memory we've spent together?",
+            "What was the first movie or TV show we watched together?",
+            "What is a cozy rainy-day memory you cherish with me?",
+            "What was a moment early in our relationship where you felt totally relaxed around me?",
+            "What meal that we cooked or ate together was the most memorable?",
+            "What is a silly mistake or disaster we had that ended up being fun?",
+            "What is your favorite late-night conversation we've ever had?",
+            "What was a major milestone in our relationship that made you super proud?",
+            "What was the very first outfit you remember seeing me wear?",
+            "What was the best surprise we ever pulled off for each other?",
+            "What is a concert, event, or party we went to that you'll never forget?",
+            "What was the first time we laughed together until our stomachs hurt?",
+            "What is a memory of us overcoming a small challenge together?",
+            "What was our most spontaneous date or decision so far?",
+            "What is your favorite birthday memory we've celebrated together?",
+            "What was the first thing you noticed about me when we first met?",
+            "What is a quiet, mundane moment with me that secretly meant a lot to you?",
+            "What is your favorite picture taken of us on a vacation?",
+            "What is a song that instantly transports you back to when we first met?",
+            "What was the most memorable conversation we had on the phone or over text?",
+            "What was the funniest misunderstanding we had before we got close?",
+            "What is your favorite memory of us hanging out with our friends or family together?",
+            "What was the most adventurous thing we've done on a whim?",
+            "What was a time when one of us saved the day during an outing?",
+            "What is your favorite memory of us walking through a park or nature trail?",
+            "What was the best restaurant or food spot we discovered completely by accident?",
+            "What is a memory of us staying up past 3 AM talking about life?",
+            "What was the first time you felt nervous in a cute way around me?",
+            "What is your favorite memory of us celebrating a promotion, test, or big work win?",
+            "What was the most memorable weather event (storm, snow, heatwave) we braved together?",
+            "What is a funny story from a hotel or Airbnb we stayed in?",
+            "What was the first time you introduced me to one of your favorite things?",
+            "What is your favorite memory of us browsing through a grocery store or market?",
+            "What was a time when we got completely lost and turned it into a fun quest?",
+            "What is your favorite memory of us sharing a dessert at a late-night diner?",
+            "What was the most unique or weird tourist spot we visited together?",
+            "What is a memory of us working together to assemble furniture or clean up?",
+            "What was the first joke I made that genuinely made you laugh out loud?",
+            "What is your favorite memory of us lounging in comfortable silence?",
+            "What was a time when we surprised each other with the exact same idea?",
+            "What is a memory of us watching a terrible movie just to laugh at it?",
+            "What was the best coffee shop or bakery date we ever had?",
+            "What is your favorite memory of us exchanging handwritten notes or cards?",
+            "What was a time when we cheered each other up from a terrible mood?",
+            "What is a memory of us looking at old childhood photos of each other?",
+            "What was the most scenic drive we ever took together?",
+            "What is your favorite memory of us lounging by a pool, lake, or ocean?",
+            "What was a time when we accidentally wore matching colors or outfits?",
+            "What is a memory of us sharing headphones on public transit or a flight?",
+            "What was the best impromptu dance party we had in our kitchen or room?",
+            "What is your favorite memory of us tasting local food on a trip?",
+            "What was a time when we helped each other through a stressful family event?",
+            "What is a memory of us watching animals (zoo, pets, wildlife) together?",
+            "What was the first board game or video game we played against each other?",
+            "What is your favorite memory of us waking up ridiculously early for something fun?",
+            "What was a time when we shared an umbrella during an unexpected downpour?",
+            "What is a memory of us trying a bizarre or exotic food for the first time?",
+            "What was the funniest thing either of us said while half-asleep?",
+            "What is your favorite memory of us packing or unpacking bags for a trip?",
+            "What was a time when we took a bold risk and it paid off wonderfully?",
+            "What is a memory of us building a blanket fort or cozy setup indoors?",
+            "What was the first book, article, or podcast recommendation we shared?",
+            "What is your favorite memory of us walking home under streetlights late at night?",
+            "What was a time when we laughed uncontrollably in a quiet, serious place?",
+            "What is a memory of us celebrating a quiet milestone with just takeout?",
+            "What was the best sunset or sunrise we paused to watch together?",
+            "What is your favorite memory of us picking out a Christmas tree, pumpkin, or holiday decor?",
+            "What was a time when we had a deep philosophical debate over something silly?",
+            "What is a memory of us exploring a weird antique shop or thrift store?",
+            "What was the first time you felt like we were officially a solid team?",
+            "What is your favorite memory of us taking shelter in a cafe during bad weather?",
+            "What was a time when we surprised each other with breakfast in bed?",
+            "What is a memory of us cheering for opposite teams or players jokingly?",
+            "What was the best homemade meal we ever attempted to cook from scratch?",
+            "What is your favorite memory of us sharing a huge tub of popcorn at the cinema?",
+            "What was a time when we laughed at a wardrobe malfunction?",
+            "What is a memory of us navigating a crowded festival or fair together?",
+            "What was the first time we shared a secret that nobody else knew?",
+            "What is your favorite memory of us relaxing on a porch, balcony, or rooftop?",
+            "What was a time when we spent an entire day in our pajamas watching shows?",
+            "What is a memory of us taking turns picking songs during a long drive?",
+            "What was the best spontaneous gift exchange we ever did?",
+            "What is your favorite memory of us visiting a botanical garden or flower park?",
+            "What was a time when we helped each other study or prep for a big presentation?",
+            "What is a memory of us collecting shells, rocks, or souvenirs on a trip?",
+            "What was the first time you realized our habits and quirks fit together?",
+            "What is your favorite memory of us enjoying a warm drink on a freezing day?",
+            "What was a time when we accidentally scared or startled each other?",
+            "What is a memory of us watching fireworks light up the night sky?",
+            "What was the best photo booth picture we ever took together?",
+            "What is your favorite memory of us exploring a historic town or old castle?",
+            "What was a time when we laughed over a failed recipe experiment?",
+            "What is a memory of us playing in the snow or jumping in autumn leaves?",
+            "What was the first time we cooked a massive feast for guests together?",
+            "What is your favorite memory of us relaxing in a hammock or lawn chair?",
+            "What was a time when we shared a profound moment of quiet gratitude?",
+            "What is a memory of us browsing through a massive library or bookstore aisles?",
+            "What was the best impromptu road trip detour we ever took?",
+            "What is your favorite memory of us trying out a trendy new dessert spot?",
+            "What was a time when we solved a tricky puzzle or escape room together?",
+            "What is a memory of us listening to a thunderstorm roll in at night?",
+            "What was the first time you felt completely vulnerable and open with me?",
+            "What is your favorite memory of us swimming in natural water (ocean, river, lake)?",
+            "What was a time when we shared an unforgettable laugh with a stranger?",
+            "What is a memory of us planning a dream future event or party together?",
+            "What was the best museum exhibit or art gallery we wandered through?",
+            "What is your favorite memory of us decorating our living space together?",
+            "What was a time when we supported each other through a sudden emergency?",
+            "What is a memory of us riding a tandem bike, rollercoasters, or amusement rides?",
+            "What was the first time we cooked dinner together from start to finish?",
+            "What is your favorite memory of us stargazing away from city lights?",
+            "What was a time when we laughed at our own clumsiness?",
+            "What is a memory of us testing out funny filters or taking silly selfies?",
+            "What was the best lazy Sunday afternoon nap we ever shared?",
+            "What is your favorite memory of us discovering a secret viewpoint or scenic overlook?",
+            "What was a time when we shared an incredible meal after a grueling hike?",
+            "What is a memory of us packing snacks for a long road trip or flight?",
+            "What was the first time you felt like my family or friends accepted you?",
+            "What is your favorite memory of us watching a live concert or performance?",
+            "What was a time when we laughed so hard we couldn't speak?",
+            "What is a memory of us walking through a Christmas light display in winter?",
+            "What was the best gift we brainstormed together for someone else?",
+            "What is your favorite memory of us enjoying a quiet morning with no phone notifications?",
+            "What was a time when we helped each other move apartments or pack boxes?",
+            "What is a memory of us sharing a giant pizza after a late-night outing?",
+            "What was the first time you realized how well we balance each other?",
+            "What is your favorite memory of us exploring a local farmers market?",
+            "What was a time when we shared a secret joke across a boring room?",
+            "What is a memory of us listening to street musicians in a bustling square?",
+            "What was the best prank or playful tease we pulled on each other?",
+            "What is your favorite memory of us camping or staying in a rustic cabin?",
+            "What was a time when we weathered a difficult delay or canceled plan cheerfully?",
+            "What is a memory of us feeding ducks, birds, or deer together?",
+            "What was the first time you felt a surge of deep affection out of nowhere?",
+            "What is your favorite memory of us enjoying a hot spring or sauna session?",
+            "What was a time when we shared a quiet moment on a late-night flight or train?",
+            "What is a memory of us hunting for the best local coffee roast in town?",
+            "What was the best homemade cocktail, mocktail, or drink we mixed together?",
+            "What is your favorite memory of us browsing a night market or street fair?",
+            "What was a time when we turned a boring chore into a fun dance party?",
+            "What is a memory of us watching a sports match or tournament together?",
+            "What was the first time we shared our deepest dreams for the future?",
+            "What is your favorite memory of us taking a ferry, boat ride, or cruise?",
+            "What was a time when we shared a proud moment watching someone we care about?",
+            "What is a memory of us walking through an art district or mural alleyway?",
+            "What was the best impromptu picnic we had on a patch of grass?",
+            "What is your favorite memory of us tasting wine, beer, or specialty beverages?",
+            "What was a time when we shared a hilarious inside joke with a pet?",
+            "What is a memory of us watching a classic black-and-white movie together?",
+            "What was the first time you felt like home was wherever we were?",
+            "What is your favorite memory of us exploring a botanical greenhouse in winter?",
+            "What was a time when we shared a comforting cup of soup while sick?",
+            "What is a memory of us looking at architecture and old buildings in a new city?",
+            "What was the best sunrise coffee run we ever went on?",
+            "What is your favorite memory of us sharing a box of donuts on a Sunday morning?",
+            "What was a time when we comforted each other after a heartbreaking news story?",
+            "What is a memory of us writing a collaborative bucket list on a napkin?",
+            "What was the first time you felt completely fearless walking by my side?",
+            "What is your favorite memory of us listening to an audiobook or podcast on a drive?",
+            "What was a time when we laughed at a terrible GPS navigation mistake?",
+            "What is a memory of us sitting on a park bench watching the world go by?",
+            "What was the best spontaneous weekend trip decision we ever made?",
+            "What is your favorite memory of us enjoying a warm pastry in a foreign bakery?",
+            "What was a time when we shared a peaceful moment on a quiet beach shore?",
+            "What is a memory of us finding an amazing thrift store treasure together?",
+            "What was the first time we cooked a traditional family recipe together?",
+            "What is your favorite memory of us watching a meteor shower on a warm night?",
+            "What was a time when we cheered each other on through a massive workout or run?",
+            "What is a memory of us sharing a laugh over a weird menu item translation?",
+            "What was the best lazy movie marathon weekend we ever planned?",
+            "What is your favorite memory of us exploring a castle, fort, or historic ruin?",
+            "What was a time when we shared an unforgettable sunset over mountain peaks?",
+            "What is a memory of us building an elaborate Lego set or puzzle together?",
+            "What was the first time you realized our relationship was built to last?",
+            "What is your favorite memory of us sharing a bag of warm roasted nuts at a fair?",
+            "What was a time when we comforted each other through severe jet lag?",
+            "What is a memory of us listening to a live jazz band or street performance?",
+            "What was the best impromptu photo shoot we had in a scenic spot?",
+            "What is your favorite memory of us enjoying a hot bowl of ramen on a rainy night?",
+            "What was a time when we shared a quiet moment watching city lights from above?",
+            "What is a memory of us picking fresh fruit at an orchard or farm?",
+            "What was the first time we realized we finished each other's sentences?",
+            "What is your favorite memory of us cozying up by a crackling fireplace?",
+            "What was a time when we laughed over an accidental matching clothing choice?",
+            "What is a memory of us watching the moon rise over the horizon together?",
+            "What was the best late-night grocery store run we ever took?",
+            "What is your favorite memory of us sharing a profound realization about life?",
+            "What was a time when we turned a rainy canceled beach day into an indoor adventure?",
+            "What is a memory of us exploring a quiet neighborhood filled with blooming flowers?",
+            "What was the first time you felt an overwhelming sense of peace just holding me?",
+            "What is your favorite memory of us enjoying a festival parade or street carnival?",
+            "What was a time when we shared a joyful laugh over a cute animal video?",
+            "What is a memory of us navigating a bustling train station abroad seamlessly?",
+            "What was the best unexpected compliment we gave each other in public?",
+            "What is your favorite memory of us sharing a quiet moment before an important day?",
+            "What was a time when we laughed at a bizarre billboard or advertisement?",
+            "What is a memory of us collecting leaves, pinecones, or seashells as tokens?",
+            "What was the first time you felt like every single challenge was conquerable with me?"
+        ],
+        "Travel": [
+            "If we could board a flight anywhere in the world tomorrow, where would we go?",
+            "What is your absolute dream road trip route for us to take?",
+            "Do you prefer a relaxing beach resort, a mountain cabin, or a busy city trip?",
+            "What is one country on your bucket list you haven't visited yet?",
+            "What is your favorite activity to do when we arrive at a new hotel or airbnb?",
+            "Would you rather go on a luxury cruise or an adventurous camping trip?",
+            "What is the coolest place or landmark we have explored together?",
+            "What is your favorite travel snack or road trip drink?",
+            "If we had a budget-free vacation for two weeks, what would our itinerary look like?",
+            "Do you prefer packed itineraries or completely spontaneous travel days?",
+            "What is one theme park or attraction you want us to visit together?",
+            "Would you rather spend a week in a tropical bungalow or a snowy chalet?",
+            "What is your favorite memory from a road trip we took?",
+            "What language would you love for us to try learning together for a future trip?",
+            "What is one souvenir or keepsake you always like to get when traveling?",
+            "What is your idea of the ultimate romantic tropical getaway?",
+            "Would you rather explore ancient ruins or shop in modern fashion capitals?",
+            "What is the longest distance or flight you would be willing to take with me?",
+            "What is your favorite airport or airplane habit when we travel?",
+            "What scenic viewpoint or nature spot took your breath away when we visited?",
+            "If we spent a year living abroad in one country, which would you pick?",
+            "What is your favorite local food or street food we tried while traveling?",
+            "Would you rather rent a sailboat or take a hot air balloon ride together?",
+            "What is one national park or outdoor wonder you want us to hike together?",
+            "What was the most peaceful moment you felt on one of our trips?",
+            "Would you rather travel by bullet train, first-class flight, or convertible car?",
+            "What is a historic city you want us to wander through at night?",
+            "What is your preferred weather when traveling (crisp autumn, tropical heat, snowy winter)?",
+            "What is one famous natural wonder (Grand Canyon, Aurora Borealis, Niagara Falls) you want us to see?",
+            "Would you rather stay in a glass igloo under the stars or an overwater bungalow?",
+            "What is the most exotic cuisine you'd be willing to try on a trip with me?",
+            "What is your packing style: pack a week early with lists or throw everything in an hour before?",
+            "What is a luxury travel experience you'd love for us to splurge on just once?",
+            "Would you rather explore hidden underground caves or climb a scenic mountain peak?",
+            "What is your favorite type of museum or cultural site to visit abroad?",
+            "What is a bustling foreign street market you'd love us to get lost in?",
+            "Would you rather spend our vacation hiking through lush forests or relaxing on white sand?",
+            "What is one island nation you've always dreamed of visiting with me?",
+            "What is your ideal wake-up time on a vacation day (sunrise adventure or sleeping in)?",
+            "What is a famous bridge or architectural marvel you want us to cross together?",
+            "Would you rather rent bikes to tour a historic European city or take a guided tour bus?",
+            "What is your favorite item of travel gear or luggage you can't live without?",
+            "What is a coastal fishing village you want us to visit for fresh seafood?",
+            "Would you rather experience a desert safari with stargazing or a lush jungle trek?",
+            "What is one festival or cultural celebration around the world you want us to attend?",
+            "What is your go-to strategy for beating jet lag after a long flight?",
+            "What is a majestic waterfall you want us to hike to together?",
+            "Would you rather rent a cozy countryside cottage or a penthouse suite downtown?",
+            "What is one UNESCO World Heritage site you want us to check off our list?",
+            "What is your favorite type of view from a hotel room window?",
+            "What is a sleepy coastal highway you want us to drive down with the windows rolled down?",
+            "Would you rather go whale watching in Alaska or scuba diving in the Caribbean?",
+            "What is one ancient castle or fortress you want us to explore hand-in-hand?",
+            "What is your preferred mode of public transit in a foreign city (subway, ferry, tram)?",
+            "What is a famous botanical garden abroad you'd love us to wander through?",
+            "Would you rather spend a week skiing in the Alps or surfing in Hawaii?",
+            "What is one remote wilderness cabin you'd want us to isolate in for a digital detox?",
+            "What is your favorite type of street performance or local art to watch while traveling?",
+            "What is a vibrant harbor city you want us to sail into together?",
+            "Would you rather tour historic vineyards in Italy or craft breweries in Belgium?",
+            "What is one wildlife safari reserve you want us to visit?",
+            "What is your favorite travel playlist or podcast genre for long drives?",
+            "What is a mystical fog-covered valley or highland you want us to hike?",
+            "Would you rather visit a futuristic metropolis (Tokyo, Singapore) or historic ruins (Rome, Athens)?",
+            "What is one tropical fruit you are most excited to taste fresh off the tree abroad?",
+            "What is your favorite memory of navigating airport security or terminals with me?",
+            "What is a dramatic cliffside village (like the Amalfi coast) you want us to visit?",
+            "Would you rather rent a camper van for a cross-country road trip or book luxury hotels?",
+            "What is one iconic lighthouse perched on a stormy coast you want us to visit?",
+            "What is your favorite style of travel photography (landscape, candid portraits, architecture)?",
+            "What is a serene alpine lake you want us to canoe across?",
+            "Would you rather experience a traditional tea ceremony in Japan or wine tasting in France?",
+            "What is one legendary train journey (like the Orient Express or Rocky Mountaineer) you want us to take?",
+            "What is your favorite type of souvenir postcard or magnet to collect?",
+            "What is a hidden hot spring nestled in the mountains you want us to soak in?",
+            "Would you rather explore vibrant coral reefs or hike through misty cloud forests?",
+            "What is one ancient sacred temple or monastery you want us to visit respectfully?",
+            "What is your favorite road trip snack stop tradition (gas station candy, local diner pie)?",
+            "What is a breezy Mediterranean island you want us to rent a scooter on?",
+            "Would you rather attend a massive international music festival or a quiet local folk fair?",
+            "What is one glacier or ice cave you want us to witness in person?",
+            "What is your ideal balance between scheduled excursions and lazy relaxation days on vacation?",
+            "What is a charming cobblestone alleyway town you want us to get lost in?",
+            "Would you rather cruise down the Amazon River or sail through the Greek Isles?",
+            "What is one bioluminescent bay or glowing natural wonder you want us to see?",
+            "What is your favorite travel comfort item (neck pillow, cashmere blanket, noise-canceling headphones)?",
+            "What is a dramatic canyon gorge you want us to hike along the rim of?",
+            "Would you rather spend a week camping under the Northern Lights or sunbathing in Fiji?",
+            "What is one legendary food market (like La Boqueria in Barcelona) you want us to visit?",
+            "What is your favorite memory of finding a hidden cafe while exploring a new city?",
+            "What is a misty bamboo forest or woodland trail you want us to walk through?",
+            "Would you rather explore haunted historic castles in Scotland or sunny beaches in Spain?",
+            "What is one iconic suspension bridge you want us to walk across at sunset?",
+            "What is your go-to method for keeping track of travel memories (scrapbook, journal, digital map)?",
+            "What is a vibrant floating market you want us to take a wooden boat through?",
+            "Would you rather rent a house boat on a calm lake or a beach shack on the ocean?",
+            "What is one volcanic crater or geothermal hot spot you want us to hike around?",
+            "What is your favorite type of local bakery item to hunt down when entering a new town?",
+            "What is a sleepy fishing port where we can watch boats come in at dawn?",
+            "Would you rather explore grand royal palaces or rustic medieval villages?",
+            "What is one canyon oasis or desert spring you want us to discover?",
+            "What is your favorite travel footwear style for walking miles a day?",
+            "What is a magical winter wonderland village you want us to visit during the holidays?",
+            "Would you rather go horseback riding on a beach or ride camels in a desert?",
+            "What is one famous clock tower or plaza you want us to sit and people-watch at?",
+            "What is your favorite type of view during an airplane window landing?",
+            "What is a lush green tea plantation hillside you want us to tour?",
+            "Would you rather explore subterranean catacombs or climb tall cathedral spires?",
+            "What is one secluded cove beach accessible only by a secret trail you want us to find?",
+            "What is your favorite travel morning ritual (hotel breakfast buffet, local espresso stand)?",
+            "What is a dramatic fjord cruise you want us to experience together?",
+            "Would you rather rent kayaks in a crystal-clear bay or paddleboard on a mountain lake?",
+            "What is one historic trading port or spice market you want us to wander through?",
+            "What is your favorite memory of watching locals celebrate a traditional holiday abroad?",
+            "What is a misty waterfall canyon you want us to photograph together?",
+            "Would you rather spend a rainy travel day exploring a massive library or a science museum?",
+            "What is one iconic mountain pass highway you want us to drive across?",
+            "What is your favorite travel bag style (backpack, rolling suitcase, duffel)?",
+            "What is a charming canal-filled city you want us to take a gondola or boat tour in?",
+            "Would you rather explore tropical mangrove swamps or arctic tundra landscapes?",
+            "What is one prehistoric cave painting or archaeological site you want us to visit?",
+            "What is your favorite way to learn a few phrases of a foreign language before a trip?",
+            "What is a sun-drenched coastal vineyard you want us to picnic at?",
+            "Would you rather stay in a historic treehouse lodge or a modern high-rise hotel?",
+            "What is one world-famous botanical greenhouse you want us to explore?",
+            "What is your favorite memory of reading a book on a long-haul flight or train ride?",
+            "What is a dramatic sea arch or coastal rock formation you want us to hike to?",
+            "Would you rather rent bicycles in a Dutch countryside or mopeds on a Greek island?",
+            "What is one legendary observatory you want us to visit for stargazing?",
+            "What is your favorite travel luxury (room service, spa access, premium seats)?",
+            "What is a vibrant artsy neighborhood filled with street murals you want us to explore?",
+            "Would you rather experience a dog sledding adventure in winter or a safari in summer?",
+            "What is one famous canyon railway journey you want us to take?",
+            "What is your favorite memory of packing light versus packing too much?",
+            "What is a peaceful riverside boardwalk you want us to stroll down at twilight?",
+            "Would you rather visit ancient cliff dwellings or modern glass skyscrapers?",
+            "What is one mystical stone circle or ancient ruin you want us to witness?",
+            "What is your favorite travel photography souvenir trick (taking photos of local doors, cats, signs)?",
+            "What is a breathtaking high-altitude mountain pass you want us to trek across?",
+            "Would you rather take a culinary cooking class in Thailand or pastry making in Paris?",
+            "What is one legendary desert highway road trip you want us conquer in a convertible?",
+            "What is your favorite way to unwind on the final evening of a vacation?",
+            "What is a sleepy coastal lighthouse keeper cottage you'd want us to stay in overnight?",
+            "Would you rather explore lush bamboo groves or dramatic rocky coastlines?",
+            "What is one iconic grand hotel with historic charm you want us to stay at?",
+            "What is your favorite travel map app or navigation trick?",
+            "What is a serene alpine meadow filled with wildflowers you want us to hike through?",
+            "Would you rather explore ancient subterranean water cisterns or rooftop sky gardens?",
+            "What is one secluded waterfall swimming hole you want us to find?",
+            "What is your favorite memory of trying to read a foreign menu or street sign?",
+            "What is a dramatic volcanic black sand beach you want us to walk on?",
+            "Would you rather rent a sailboat in the Mediterranean or a houseboat in Amsterdam?",
+            "What is one famous astronomical clock or historic square you want us to visit?",
+            "What is your favorite travel packing hack for saving space?",
+            "What is a misty redwood forest or ancient giant tree trail you want us to walk?",
+            "Would you rather experience a traditional tea house in Kyoto or a cafe in Vienna?",
+            "What is one famous canyon bridge crossing you want us to experience?",
+            "What is your favorite memory of finding an incredible local bakery by following the scent?",
+            "What is a sun-baked Mediterranean terrace where you want us to sip morning coffee?",
+            "Would you rather explore medieval walled cities or tropical jungle ruins?",
+            "What is one legendary mountain summit railway you want us to ride?",
+            "What is your favorite travel outfit combination for maximum comfort and style?",
+            "What is a peaceful harbor town where you want us to watch fishing boats at sunset?",
+            "Would you rather take a hot air balloon ride over Cappadocia or the Serengeti?",
+            "What is one ancient desert caravan city you want us to explore?",
+            "What is your favorite memory of exchanging foreign currency or trying local coins?",
+            "What is a dramatic coastal cliff trail where you want us to watch the waves crash?",
+            "Would you rather explore grand opera houses or open-air amphitheaters abroad?",
+            "What is one iconic suspension footbridge swaying over a gorge you want us to cross?",
+            "What is your favorite travel memory of a spontaneous act of kindness from a local?",
+            "What is a tranquil river valley where you want us to rent bicycles for the day?",
+            "Would you rather tour historic whiskey distilleries in Ireland or coffee farms in Colombia?",
+            "What is one legendary canyon trail where you want us to hike down to the river bed?",
+            "What is your favorite memory of watching the lights of a new city appear from the airplane window?",
+            "What is a sunlit citrus orchard grove where you want us to wander together?",
+            "Would you rather explore deep cave stalactites or high mountain glaciers?",
+            "What is one famous historic library or scriptorium you want us to visit abroad?",
+            "What is your favorite travel souvenir token to display in our home?",
+            "What is a misty moorland or highland plateau where you want us to take a scenic drive?",
+            "Would you rather spend a week in a coastal lighthouse or a mountain observatory?",
+            "What is one iconic waterfall gorge you want us to hike behind the veil of?",
+            "What is your favorite memory of finding a quiet bench in a bustling foreign plaza?"
+        ],
+        "General Partner Knowledge": [
+            "What is your ultimate comfort food after a long, exhausting day?",
+            "What beverage or order do you get at a coffee shop?",
+            "What is your favorite movie or show to rewatch when you can't decide?",
+            "What is your biggest daily pet peeve that annoys you instantly?",
+            "Are you more of a night owl or an early morning person?",
+            "What is your dream job or career if money were no object?",
+            "What is your absolute favorite dessert or sweet treat?",
+            "What color do you feel looks best on you?",
+            "What hobby or passion project could you talk about for hours?",
+            "What is your favorite season of the year and why?",
+            "If you could only eat one cuisine (Italian, Mexican, Japanese, etc.) forever, what is it?",
+            "What is your go-to pizza topping combination?",
+            "What is your favorite room in the house to relax in?",
+            "What phone app do you open most frequently throughout the day?",
+            "What is one food or ingredient you absolutely refuse to eat?",
+            "What music genre or artist is your current guilty pleasure?",
+            "What was your favorite subject or interest back in high school/college?",
+            "What is your favorite way to unwind on a Sunday afternoon?",
+            "What animal or pet would you love to have if space wasn't an issue?",
+            "How do you like your eggs cooked in the morning?",
+            "What is your favorite scent or candle fragrance?",
+            "What game (board game, video game, card game) do you love playing most?",
+            "What is your go-to ice cream flavor?",
+            "Do you prefer salty snacks or sweet snacks?",
+            "What shoe brand or style do you wear most often?",
+            "What is your favorite holiday of the year?",
+            "What is your absolute least favorite chore around the house?",
+            "What is your preferred temperature for setting the thermostat?",
+            "What is your favorite board game or party game to play with friends?",
+            "What is your go-to fast food order when you're in a rush?",
+            "What is your favorite type of flower or plant?",
+            "What is your favorite genre of books or podcasts?",
+            "What is your signature clothing style when you want to feel confident?",
+            "What is your favorite sports team, athlete, or sport to watch?",
+            "What is your favorite childhood cartoon or show?",
+            "What is your preferred way to organize your desktop or phone apps?",
+            "What is your favorite brand of toothpaste, soap, or shampoo?",
+            "What is your go-to karaoke song or shower singing tune?",
+            "What is your favorite type of weather for sleeping?",
+            "What is your biggest fear or phobia?",
+            "What is your favorite piece of furniture or decor in our place?",
+            "What is your preferred method for waking up in the morning (gentle alarm, loud music, natural light)?",
+            "What is your favorite board game strategy or play style?",
+            "What is your favorite brand or style of coffee mug?",
+            "What is your favorite type of sandwich filling or sub order?",
+            "What is your go-to excuse when you want to skip a social event?",
+            "What is your favorite childhood memory involving food?",
+            "What is your favorite clothing store or brand for shopping?",
+            "What is your preferred method of taking notes (digital app, physical notebook, sticky notes)?",
+            "What is your favorite board game expansion or tabletop accessory?",
+            "What is your favorite type of cookie (chocolate chip, snickerdoodle, peanut butter)?",
+            "What is your go-to comfort movie when you are sick in bed?",
+            "What is your favorite way to celebrate a personal achievement?",
+            "What is your preferred workout routine or physical activity?",
+            "What is your favorite board game mechanic (deck building, worker placement, trivia)?",
+            "What is your go-to breakfast cereal or morning meal?",
+            "What is your favorite type of art or interior design style?",
+            "What is your preferred way to store leftovers (glass containers, plastic tubs, foil)?",
+            "What is your favorite board game theme (sci-fi, fantasy, mystery, strategy)?",
+            "What is your go-to late-night snack when cravings hit?",
+            "What is your favorite type of comedy (slapstick, dry humor, satire, puns)?",
+            "What is your preferred method of reading books (physical paper, Kindle, audiobook)?",
+            "What is your favorite board game insert or storage organizer?",
+            "What is your go-to smoothie or juice flavor combination?",
+            "What is your favorite type of jacket or outerwear?",
+            "What is your preferred method for managing your weekly schedule (calendar app, paper planner, memory)?",
+            "What is your favorite board game rule variant or house rule?",
+            "What is your go-to tea blend (chamomile, green, earl grey, peppermint)?",
+            "What is your favorite type of lighting in a room (warm lamps, bright overhead, string lights)?",
+            "What is your preferred way to pack a suitcase (rolling clothes, packing cubes, folding)?",
+            "What is your favorite board game component feel (wooden meeples, heavy dice, metal coins)?",
+            "What is your go-to potato chip flavor (barbecue, sour cream and onion, plain)?",
+            "What is your favorite type of watch or jewelry accessory?",
+            "What is your preferred method for washing dishes (by hand immediately, soaking in sink, dishwasher)?",
+            "What is your favorite board game rulebook clarity style?",
+            "What is your go-to burger topping setup (cheese, bacon, mushrooms, lettuce)?",
+            "What is your favorite type of blanket or throw pillow fabric?",
+            "What is your preferred method for handling junk mail and paper clutter?",
+            "What is your favorite board game player color (red, blue, green, yellow)?",
+            "What is your go-to pastry at a local bakery (croissant, muffin, danish)?",
+            "What is your favorite type of backpack or bag compartment organization?",
+            "What is your preferred method for brushing your teeth (electric toothbrush, manual, specific toothpaste brand)?",
+            "What is your favorite board game box art style?",
+            "What is your go-to salad dressing style (ranch, vinaigrette, caesar, balsamic)?",
+            "What is your favorite type of socks (fuzzy, athletic, patterned, wool)?",
+            "What is your preferred method for folding laundry (Marie Kondo style, rolling, quick toss)?",
+            "What is your favorite board game victory condition type?",
+            "What is your go-to taco filling (carne asada, chicken, fish, veggie)?",
+            "What is your favorite type of towel fluffiness and bath sheet size?",
+            "What is your preferred method for shopping for groceries (strict list, browsing aisles, delivery app)?",
+            "What is your favorite board game publisher or designer?",
+            "What is your go-to soup flavor (tomato basil, chicken noodle, minestrone, clam chowder)?",
+            "What is your favorite type of pillow firmness (soft, firm, memory foam)?",
+            "What is your preferred method for organizing your closet (by color, by clothing type, casual vs formal)?",
+            "What is your favorite board game setup and teardown speed?",
+            "What is your go-to sushi roll choice (salmon avocado, spicy tuna, dragon roll)?",
+            "What is your favorite type of rug texture under your feet?",
+            "What is your preferred method for taking photos on your phone (portrait mode, filters, raw candid)?",
+            "What is your favorite board game solo mode or variant?",
+            "What is your go-to dipping sauce for fries (ketchup, ranch, honey mustard, mayo)?",
+            "What is your favorite type of keychain or bag charm?",
+            "What is your preferred method for cleaning floors (vacuum, sweep, mop, robot vacuum)?",
+            "What is your favorite board game theme song or soundtrack to play in the background?",
+            "What is your go-to pasta shape (penne, spaghetti, rigatoni, fettuccine)?",
+            "What is your favorite type of winter scarf or beanie material?",
+            "What is your preferred method for watering houseplants or garden beds?",
+            "What is your favorite board game score tracking method (app, score pad, track board)?",
+            "What is your go-to noodle dish style (ramen, pad thai, lo mein, pho)?",
+            "What is your favorite type of sunglasses frame style?",
+            "What is your preferred method for locking up the house at night?",
+            "What is your favorite board game dice rolling mechanism or tower?",
+            "What is your go-to cheese variety (cheddar, brie, gouda, mozzarella)?",
+            "What is your favorite type of umbrella design (compact, golf size, clear dome)?",
+            "What is your preferred method for charging your phone overnight?",
+            "What is your favorite board game card sleeve brand or thickness?",
+            "What is your go-to bread type for toast (sourdough, whole wheat, brioche, rye)?",
+            "What is your favorite type of wallet or cardholder style?",
+            "What is your preferred method for choosing what to watch on TV (scrolling endlessly, curated watchlist, random episode)?",
+            "What is your favorite board game insert organizer brand (Broken Token, Folded Space, DIY)?",
+            "What is your go-to donut style (glazed, jelly filled, chocolate frosted, maple bar)?",
+            "What is your favorite type of pen or pencil for writing notes?",
+            "What is your preferred method for waking up your partner in the morning?",
+            "What is your favorite board game convention or meetup memory?",
+            "What is your go-to pizza crust style (thin crust, stuffed crust, deep dish, hand tossed)?",
+            "What is your favorite type of phone case (clear, rugged, leather, silicone)?",
+            "What is your preferred method for opening stubborn packaging (scissors, hands, teeth)?",
+            "What is your favorite board game rule clarification forum or rulebook detail?",
+            "What is your go-to potato preparation (mashed, fries, baked, tater tots)?",
+            "What is your favorite type of water bottle or tumbler brand?",
+            "What is your preferred method for testing if baked goods are done (toothpick, thermometer, visual)?",
+            "What is your favorite board game expansion rule addition?",
+            "What is your go-to rice dish style (fried rice, jasmine rice, risotto, paella)?",
+            "What is your favorite type of bedside table reading lamp?",
+            "What is your preferred method for organizing digital photo albums?",
+            "What is your favorite board game cooperative game win rate memory?",
+            "What is your go-to dumpling style (steamed, pan-fried, soup dumplings)?",
+            "What is your favorite type of winter glove or mitten style?",
+            "What is your preferred method for setting reminders and calendar alerts?",
+            "What is your favorite board game miniature painting or upgrading hobby aspect?",
+            "What is your go-to breakfast pastry or bagel spread (cream cheese, butter, jam)?",
+            "What is your favorite type of bathroom mirror lighting?",
+            "What is your preferred method for packing a cooler for a picnic or road trip?",
+            "What is your favorite board game storage shelf placement in our home?",
+            "What is your go-to barbecue meat style (pulled pork, brisket, ribs, chicken)?",
+            "What is your favorite type of laundry detergent scent or fragrance-free?",
+            "What is your preferred method for selecting a restaurant when we are both indecisive?",
+            "What is your favorite board game rule that always trips people up?",
+            "What is your go-to taco truck order side (chips and salsa, rice and beans, elote)?",
+            "What is your favorite type of desk chair ergonomics and lumbar support?",
+            "What is your preferred method for testing the temperature of bathwater?",
+            "What is your favorite board game rule exception or edge case?",
+            "What is your go-to sandwich bread style (ciabatta, wrap, sourdough, baguette)?",
+            "What is your favorite type of bedroom curtain opacity (blackout, sheer, linen)?",
+            "What is your preferred method for packing groceries into reusable shopping bags?",
+            "What is your favorite board game player turn order tie-breaker rule?",
+            "What is your go-to popcorn seasoning style (butter, salt, white cheddar, caramel)?",
+            "What is your favorite type of shower head water pressure setting?",
+            "What is your preferred method for checking the weather forecast before leaving the house?",
+            "What is your favorite board game rulebook humor or flavor text?",
+            "What is your go-to fruit selection at a grocery store (berries, bananas, apples, melons)?",
+            "What is your favorite type of hand soap scent in the kitchen?",
+            "What is your preferred method for deciding who drives when we go out?",
+            "What is your favorite board game storage box condition (mint in box, gently worn, well-loved)?",
+            "What is your go-to breakfast egg side dish (hash browns, toast, fruit, bacon)?",
+            "What is your favorite type of closet hanger material (wooden, velvet, wire)?",
+            "What is your preferred method for testing if a watermelon is ripe?",
+            "What is your favorite board game game night snack pairing?",
+            "What is your go-to drink sweetener (sugar, honey, stevia, none)?",
+            "What is your favorite type of trash can design and placement in the home?",
+            "What is your preferred method for breaking in a new pair of shoes?",
+            "What is your favorite board game rule summary player aid card style?",
+            "What is your go-to oatmeal topping combination (berries, brown sugar, cinnamon, nuts)?",
+            "What is your favorite type of doormat greeting style at our front door?",
+            "What is your preferred method for organizing spices in the kitchen pantry?"
+        ],
+        "Spicy": [
+            "What is your favorite type of physical affection or touch from me?",
+            "What is one outfit or lingerie piece of mine that you love seeing me in?",
+            "Where is your favorite place on your body to be kissed?",
+            "What is a sensual fantasy or idea you've thought about trying with me?",
+            "What time of day do you feel most in the mood for romance?",
+            "What is your favorite place outside of the bedroom where we've gotten intimate?",
+            "What touch or whisper instantly gives you butterflies or chills?",
+            "What is your favorite memory of a particularly passionate night we had?",
+            "What kind of massage (back, shoulders, feet) do you crave most from me?",
+            "What compliment about your body or attraction makes you feel sexiest?",
+            "Do you prefer slow and romantic intimacy or passionate and spontaneous intimacy?",
+            "What is one subtle signal you use when you want to initiate intimacy?",
+            "What setting or atmosphere (candles, music, dim lights) turns you on the most?",
+            "What is your favorite position or way we connect intimately?",
+            "What is something new or exciting you want to explore together in the bedroom?",
+            "How do you feel about morning quickies vs. late-night sessions?",
+            "What is the most seductive thing I can wear around the house?",
+            "What kiss of ours stands out as the most passionate in your memory?",
+            "What is one boundary or comfort preference you appreciate that we share?",
+            "What scent or perfume/cologne on me drives you crazy?",
+            "What tease or flirtatious text from me gets you excited during the day?",
+            "What is your favorite part of foreplay or building up anticipation?",
+            "What eye contact or look do I give you that lets you know what I'm thinking?",
+            "Would you rather have an intense weekend staycation or a wild late-night adventure?",
+            "What makes you feel most confident and desirable in the bedroom?",
+            "What is your favorite way to be woken up when we are alone?",
+            "What is a sexy compliment you love hearing from me?",
+            "What is the most adventurous place you'd ever be willing to try getting intimate?",
+            "How do you feel about showering or bathing together?",
+            "What is a specific touch or scratch on your back/scalp that melts you instantly?",
+            "What is your favorite type of music or background sound during intimate moments?",
+            "What is a seductive look or smile I give that always gets your attention?",
+            "What is your favorite memory of us sneaking away during a family or social gathering?",
+            "What is one accessory or item (blindfolds, silk ties, oils) you'd be curious to experiment with?",
+            "What is the most memorable flirtatious whisper someone whispered in your ear (me)?",
+            "What is your favorite part of undressing or being undressed by me?",
+            "How do you feel about playful teasing and dirty talk throughout the day?",
+            "What is a physical feature of yours that you love when I focus on?",
+            "What is your favorite memory of a spontaneous hotel room romance?",
+            "What is one intimate roleplay or scenario you've secretly daydreamed about?",
+            "What is your favorite way to initiate playfulness when we get home?",
+            "What is the most intoxicating thing about the way I kiss you?",
+            "How do you feel about slow, lingering caresses versus urgent passion?",
+            "What is a spot on your neck or collarbone that is your ultimate weak point?",
+            "What is your favorite memory of us wearing very little on a hot summer night?",
+            "What is one sensual habit or routine you wish we did more often?",
+            "What is the most seductive text message you've ever received from me?",
+            "How do you feel about morning intimacy vs. right before falling asleep?",
+            "What is a position or angle that makes you feel closest and most connected to me?",
+            "What is your favorite memory of us sharing a steamy shower or bath?",
+            "What is one new lingerie style or color you'd love to see me wear?",
+            "What is the sexiest thing I do without even realizing I'm doing it?",
+            "How do you feel about passionate kissing in public places vs. total privacy?",
+            "What is your favorite type of massage oil, lotion, or scent on my skin?",
+            "What is a memory of a time we couldn't keep our hands off each other?",
+            "What is one sensual boundary you are glad we respect and communicate about?",
+            "What is the most exciting thing about anticipating a romantic night together?",
+            "How do you feel about slow building anticipation over hours before getting intimate?",
+            "What is your favorite way for me to trace my fingers across your skin?",
+            "What is a memory of a time we locked a door and spent hours together?",
+            "What is one intimate fantasy involving a specific location or hotel room?",
+            "What is your favorite part of my body to caress when we cuddle?",
+            "How do you feel about wearing silk, satin, or lace textures?",
+            "What is a seductive nickname or pet name you love hearing in private?",
+            "What is your favorite memory of an intense late-night conversation leading to romance?",
+            "What is one playful challenge or game we could play in the bedroom?",
+            "What is the most alluring scent or lotion you love wearing for me?",
+            "How do you feel about dim red lighting, candles, or moonlight during intimacy?",
+            "What is your favorite angle or position for deep eye contact during intimacy?",
+            "What is a memory of us sharing a passionate moment in a secluded outdoor spot?",
+            "What is one intimate desire you've wanted to share with me for a long time?",
+            "What is your favorite way to give or receive neck and shoulder kisses?",
+            "How do you feel about gentle hair-pulling or gripping during passionate moments?",
+            "What is a sexy memory of us getting ready for a fancy date night together?",
+            "What is one intimate question you've always wanted to ask me in private?",
+            "What is your favorite part of my embrace when we pull each other close?",
+            "How do you feel about playful biting or nibbling during intense moments?",
+            "What is a memory of a time we surprised each other with unexpected romance?",
+            "What is one sensual adventure you'd want us to experience on a couples trip?",
+            "What is your favorite way to transition from a long day into romantic intimacy?",
+            "How do you feel about soft whispering directly into your ear?",
+            "What is a seductive gesture I do with my hands or hair that drives you crazy?",
+            "What is a memory of a rainy afternoon spent entirely in bed together?",
+            "What is one intimate milestone or experiment you'd love us to try this year?",
+            "What is your favorite way to show physical adoration without speaking?",
+            "How do you feel about slow, rhythmic breathing synchronized with mine?",
+            "What is a sexy memory of a time we traveled and stayed in a luxury suite?",
+            "What is one intimate preference you have that makes you feel completely fulfilled?",
+            "What is your favorite part of waking up wrapped in sheets with me?",
+            "How do you feel about playful teasing during dinner before heading home?",
+            "What is a seductive look you give when you want me to drop everything?",
+            "What is a memory of an unforgettable embrace after being apart for days?",
+            "What is one intimate scenario involving costumes or roleplay you find intriguing?",
+            "What is your favorite way to be held tightly from behind?",
+            "How do you feel about warm oil massages leading into passionate intimacy?",
+            "What is a sexy memory of us dancing closely at a party or wedding?",
+            "What is one intimate wish you want us to fulfill together soon?",
+            "What is your favorite part of my body that fits perfectly against yours?",
+            "How do you feel about light scratching or nail tracing down your back?",
+            "What is a seductive smile I give that makes your heart race instantly?",
+            "What is a memory of us stealing a passionate kiss in a dark theater or car?",
+            "What is one sensual toy, accessory, or mood enhancer you're curious about?",
+            "What is your favorite way to be kissed along your jawline and neck?",
+            "How do you feel about passionate, breathless kissing that catches you by surprise?",
+            "What is a sexy memory of us sneaking into a room together during a busy event?",
+            "What is one intimate boundary-pushing idea you'd be open to exploring?",
+            "What is your favorite part of my voice when we whisper secrets in the dark?",
+            "How do you feel about slow striptease or playful reveals in private?",
+            "What is a seductive habit of mine that instantly gets your pulse pounding?",
+            "What is a memory of us waking up in the middle of the night craving each other?",
+            "What is one intimate luxury (silk sheets, plush robes, ambient sound) you'd love?",
+            "What is your favorite way to be caressed when you're feeling especially sensitive?",
+            "How do you feel about urgent, passionate spontaneity vs. planned romantic evenings?",
+            "What is a sexy memory of us checking into a hotel desk together?",
+            "What is one intimate preference you've never dared tell anyone else?",
+            "What is your favorite part of my physical touch that makes you shiver?",
+            "How do you feel about hot wax, ice cubes, or sensory play in the bedroom?",
+            "What is a seductive phrase I can whisper that turns you on instantly?",
+            "What is a memory of us laughing and playing in bed on a lazy morning?",
+            "What is one intimate fantasy involving mirrors or interesting lighting?",
+            "What is your favorite way to initiate a passionate embrace in the kitchen?",
+            "How do you feel about gentle bondage, silk ties, or holding wrists?",
+            "What is a sexy memory of us getting locked out or stuck indoors together?",
+            "What is one intimate craving you often get during the middle of your workday?",
+            "What is your favorite part of my body to trace with your fingertips?",
+            "How do you feel about whispering your deepest desires right into my ear?",
+            "What is a seductive look you give when you want me all to yourself?",
+            "What is a memory of us sharing a steamy embrace against a kitchen counter?",
+            "What is one intimate role or dynamic you'd find thrilling to experiment with?",
+            "What is your favorite way to be kissed that takes your breath away immediately?",
+            "How do you feel about slow, agonizingly patient buildup before passion?",
+            "What is a sexy memory of us driving home quickly after a great date night?",
+            "What is one intimate adventure you'd love us to try during a beach vacation?",
+            "What is your favorite part of my skin touching yours in the dark?",
+            "How do you feel about soft feather tickles or light fingernail tracing?",
+            "What is a seductive gesture I make when I'm trying to flirt across a room?",
+            "What is a memory of us sharing an intense, silent look across a crowded dinner table?",
+            "What is one intimate experiment you'd be eager to test out this weekend?",
+            "What is your favorite way to be hugged tightly from the front?",
+            "How do you feel about scented massage candles or warming lotions?",
+            "What is a sexy memory of us lounging in oversized shirts together?",
+            "What is one intimate goal you'd love for us to explore and master together?",
+            "What is your favorite part of the way our lips fit together during a deep kiss?",
+            "How do you feel about passionate biting or lip-gripping during romance?",
+            "What is a seductive smile I give that lets you know it's time to focus on us?",
+            "What is a memory of us stealing a long, passionate kiss in an elevator?",
+            "What is one intimate accessory or blindfold item you'd want to test?",
+            "What is your favorite way to be kissed along your collarbone and shoulders?",
+            "How do you feel about urgent, breathless romance when we've been apart all day?",
+            "What is a sexy memory of us escaping a boring party to head home early?",
+            "What is one intimate fantasy involving outdoor privacy under the stars?",
+            "What is your favorite part of my body that you love holding onto?",
+            "How do you feel about slow, sensual massages that last for an hour?",
+            "What is a seductive habit I have when I'm trying to get your attention?",
+            "What is a memory of us waking up early on a weekend just for romance?",
+            "What is one intimate luxury you'd want us to splurge on for our bedroom?",
+            "What is your favorite way to be caressed when you're wrapped in a blanket?",
+            "How do you feel about spontaneous romance in unexpected rooms of the house?",
+            "What is a sexy memory of us checking out a boutique hotel lobby together?",
+            "What is one intimate preference you have that always guarantees fireworks?",
+            "What is your favorite part of my touch that makes you completely lose focus?",
+            "How do you feel about sensory deprivation (blindfolds or ear whispers) during intimacy?",
+            "What is a seductive phrase you love whispering to me in the dark?",
+            "What is a memory of us laughing uncontrollably right before getting romantic?",
+            "What is one intimate fantasy involving shadows, moonlight, and open curtains?",
+            "What is your favorite way to pull me close when we're walking down the street?",
+            "How do you feel about firm gripping and passionate pulling during intimacy?",
+            "What is a sexy memory of us returning home from a fantastic vacation?",
+            "What is one intimate adventure you'd love us to book at a secluded resort?",
+            "What is your favorite part of my skin that is most sensitive to your touch?",
+            "How do you feel about soft, feather-light tracing down your arms and back?",
+            "What is a seductive look I give that tells you I'm thinking about later tonight?",
+            "What is a memory of us sharing a passionate moment in front of a fireplace?",
+            "What is one intimate experiment you'd be curious to try with flavored oils?",
+            "What is your favorite way to be kissed that makes your knees go weak?",
+            "How do you feel about slow, passionate teasing that makes you beg for more?",
+            "What is a sexy memory of us changing clothes quickly in a rush?",
+            "What is one intimate goal you'd love for our relationship to experience this year?",
+            "What is your favorite part of the way our bodies naturally curve together?",
+            "How do you feel about passionate hair-tugging and deep neck kisses?",
+            "What is a seductive smile I give when I whisper something naughty in your ear?",
+            "What is a memory of us stealing a passionate kiss in a quiet hallway?",
+            "What is one intimate accessory or silk tie you'd want to experiment with tonight?",
+            "What is your favorite way to be kissed along your spine and lower back?",
+            "How do you feel about urgent, passionate romance after a long period apart?",
+            "What is a sexy memory of us closing all the blinds on a sunny afternoon?",
+            "What is one intimate fantasy involving hotel room service and robes?",
+            "What is your favorite part of my touch when we cuddle closely in bed?",
+            "How do you feel about slow, lingering kisses that last for several minutes?",
+            "What is a seductive habit I have when I'm whispering something in public?",
+            "What is a memory of us waking up late and spending the whole day in bed?",
+            "What is one intimate luxury you'd love for us to incorporate into our routine?",
+            "What is your favorite way to be caressed when you need to unwind completely?",
+            "How do you feel about spontaneous, breathless romance right when we walk through the door?"
+        ]
+    };
+
+    let selectedQuestions = [];
+    let selectedCategory = '';
+
+    let isHost = false;
+    let peer = null;
+    let conn = null;
+    let currentQuestionIdx = 0;
+    let totalScore = 0;
+    let mySubmission = null;
+    let partnerSubmission = null;
+    let gameHistory = [];
+
+    // DOM Elements
+    const screenLobby = document.getElementById('screen-lobby');
+    const screenWaiting = document.getElementById('screen-waiting');
+    const screenCategory = document.getElementById('screen-category');
+    const screenGame = document.getElementById('screen-game');
+    const screenResults = document.getElementById('screen-results');
+    const screenGameover = document.getElementById('screen-gameover');
+
+    const hostCategoryView = document.getElementById('host-category-view');
+    const guestCategoryView = document.getElementById('guest-category-view');
+
+    const btnCreateRoom = document.getElementById('btn-create-room');
+    const btnJoinRoom = document.getElementById('btn-join-room');
+    const inputRoomId = document.getElementById('input-room-id');
+    const displayRoomId = document.getElementById('display-room-id');
+    const btnCopy = document.getElementById('btn-copy');
+
+    const categoryBadge = document.getElementById('category-badge');
+    const questionCounter = document.getElementById('question-counter');
+    const scoreCounter = document.getElementById('score-counter');
+    const questionText = document.getElementById('question-text');
+    const inputMyAnswer = document.getElementById('input-my-answer');
+    const inputPartnerGuess = document.getElementById('input-partner-guess');
+    const btnSubmit = document.getElementById('btn-submit');
+    const waitingPeerStatus = document.getElementById('waiting-peer-status');
+
+    const roundScoreMsg = document.getElementById('round-score-msg');
+    const resMyAnswer = document.getElementById('res-my-answer');
+    const resMyGuess = document.getElementById('res-my-guess');
+    const resPartnerAnswer = document.getElementById('res-partner-answer');
+    const resPartnerGuess = document.getElementById('res-partner-guess');
+    const btnNext = document.getElementById('btn-next');
+
+    const gameoverScoreText = document.getElementById('gameover-score-text');
+    const gameoverSummaryMsg = document.getElementById('gameover-summary-msg');
+    const historyContainer = document.getElementById('history-container');
+    const btnRestart = document.getElementById('btn-restart');
+
+    function switchScreen(screen) {
+        [screenLobby, screenWaiting, screenCategory, screenGame, screenResults, screenGameover].forEach(s => s.classList.add('hidden'));
+        screen.classList.remove('hidden');
+    }
+
+    function getRandom10Questions(categoryName) {
+        const pool = [...allQuestionsData[categoryName]];
+        const shuffled = pool.sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, 10);
+    }
+
+    // Create Room (Host)
+    btnCreateRoom.addEventListener('click', () => {
+        isHost = true;
+        peer = new Peer();
+
+        peer.on('open', (id) => {
+            displayRoomId.textContent = id;
+            switchScreen(screenWaiting);
+        });
+
+        peer.on('connection', (connection) => {
+            conn = connection;
+            setupConnection();
+            showCategoryScreen();
+        });
+    });
+
+    // Join Room (Guest)
+    btnJoinRoom.addEventListener('click', () => {
+        isHost = false;
+        const roomId = inputRoomId.value.trim();
+        if (!roomId) return alert("Please enter a valid room ID.");
+
+        peer = new Peer();
+
+        peer.on('open', () => {
+            conn = peer.connect(roomId);
+            setupConnection();
+            showCategoryScreen();
+        });
+    });
+
+    btnCopy.addEventListener('click', () => {
+        navigator.clipboard.writeText(displayRoomId.textContent);
+        btnCopy.textContent = "Copied!";
+        setTimeout(() => btnCopy.textContent = "Copy", 2000);
+    });
+
+    function showCategoryScreen() {
+        switchScreen(screenCategory);
+        if (isHost) {
+            hostCategoryView.classList.remove('hidden');
+            guestCategoryView.classList.add('hidden');
+        } else {
+            hostCategoryView.classList.add('hidden');
+            guestCategoryView.classList.remove('hidden');
+        }
+    }
+
+    // Host selects a category
+    document.querySelectorAll('.btn-category').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (!isHost) return;
+            const category = btn.getAttribute('data-category');
+            const random10 = getRandom10Questions(category);
+
+            conn.send({
+                type: 'START_GAME_SESSION',
+                payload: { category, questions: random10 }
+            });
+
+            startSession(category, random10);
+        });
+    });
+
+    function setupConnection() {
+        conn.on('data', (data) => {
+            if (data.type === 'START_GAME_SESSION') {
+                startSession(data.payload.category, data.payload.questions);
+            } else if (data.type === 'SUBMISSION') {
+                partnerSubmission = data.payload;
+                checkBothSubmitted();
+            } else if (data.type === 'NEXT_QUESTION') {
+                proceedToNextQuestion();
+            } else if (data.type === 'RETURN_TO_CATEGORY') {
+                showCategoryScreen();
+            }
+        });
+    }
+
+    function startSession(category, questionList) {
+        selectedCategory = category;
+        selectedQuestions = questionList;
+        currentQuestionIdx = 0;
+        totalScore = 0;
+        gameHistory = [];
+        loadQuestion();
+        switchScreen(screenGame);
+    }
+
+    function loadQuestion() {
+        categoryBadge.textContent = selectedCategory;
+        questionCounter.textContent = `Question ${currentQuestionIdx + 1} of ${selectedQuestions.length}`;
+        scoreCounter.textContent = `Score: ${totalScore}`;
+        questionText.textContent = selectedQuestions[currentQuestionIdx];
+
+        inputMyAnswer.value = '';
+        inputPartnerGuess.value = '';
+        inputMyAnswer.disabled = false;
+        inputPartnerGuess.disabled = false;
+        btnSubmit.disabled = false;
+        btnSubmit.classList.remove('opacity-50', 'cursor-not-allowed');
+        waitingPeerStatus.classList.add('hidden');
+        mySubmission = null;
+        partnerSubmission = null;
+
+        if (currentQuestionIdx === selectedQuestions.length - 1) {
+            btnNext.textContent = "View Final Summary";
+        } else {
+            btnNext.textContent = "Next Question";
+        }
+    }
+
+    btnSubmit.addEventListener('click', () => {
+        const myAns = inputMyAnswer.value.trim();
+        const myGuess = inputPartnerGuess.value.trim();
+
+        if (!myAns || !myGuess) {
+            alert("Please fill out both fields before locking in!");
+            return;
+        }
+
+        mySubmission = { answer: myAns, guess: myGuess };
+
+        inputMyAnswer.disabled = true;
+        inputPartnerGuess.disabled = true;
+        btnSubmit.disabled = true;
+        btnSubmit.classList.add('opacity-50', 'cursor-not-allowed');
+        waitingPeerStatus.classList.remove('hidden');
+
+        conn.send({ type: 'SUBMISSION', payload: mySubmission });
+        checkBothSubmitted();
+    });
+
+    function checkBothSubmitted() {
+        if (mySubmission && partnerSubmission) {
+            let roundPoints = 0;
+            if (mySubmission.guess.toLowerCase() === partnerSubmission.answer.toLowerCase()) roundPoints++;
+            if (partnerSubmission.guess.toLowerCase() === mySubmission.answer.toLowerCase()) roundPoints++;
+
+            totalScore += roundPoints;
+
+            gameHistory.push({
+                question: selectedQuestions[currentQuestionIdx],
+                myAnswer: mySubmission.answer,
+                myGuess: mySubmission.guess,
+                partnerAnswer: partnerSubmission.answer,
+                partnerGuess: partnerSubmission.guess,
+                points: roundPoints
+            });
+
+            roundScoreMsg.textContent = roundPoints > 0 ? `+${roundPoints} Point${roundPoints > 1 ? 's' : ''}! Great sync!` : `0 Points this round!`;
+            resMyAnswer.textContent = mySubmission.answer;
+            resMyGuess.textContent = mySubmission.guess;
+            resPartnerAnswer.textContent = partnerSubmission.answer;
+            resPartnerGuess.textContent = partnerSubmission.guess;
+
+            switchScreen(screenResults);
+        }
+    }
+
+    btnNext.addEventListener('click', () => {
+        conn.send({ type: 'NEXT_QUESTION' });
+        proceedToNextQuestion();
+    });
+
+    function proceedToNextQuestion() {
+        if (currentQuestionIdx < selectedQuestions.length - 1) {
+            currentQuestionIdx++;
+            loadQuestion();
+            switchScreen(screenGame);
+        } else {
+            showGameOver();
+        }
+    }
+
+    function showGameOver() {
+        gameoverScoreText.textContent = `Total Score: ${totalScore} / ${selectedQuestions.length * 2}`;
+
+        if (totalScore >= 15) {
+            gameoverSummaryMsg.textContent = "Soulmates! You two are completely in sync! 💕";
+        } else if (totalScore >= 8) {
+            gameoverSummaryMsg.textContent = "Great job! You know each other really well! ✨";
+        } else {
+            gameoverSummaryMsg.textContent = "A bit more date nights needed to get on the same wavelength! 😉";
+        }
+
+        historyContainer.innerHTML = '';
+        gameHistory.forEach((item, index) => {
+            const card = document.createElement('div');
+            card.className = "bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs space-y-2";
+            card.innerHTML = `
+                    <div class="flex justify-between items-center font-bold text-slate-600 border-b border-slate-200 pb-1">
+                        <span>Q${index + 1}: ${item.question}</span>
+                        <span class="text-rose-500 font-extrabold">+${item.points} pts</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 pt-1 text-slate-700">
+                        <div>
+                            <span class="font-bold text-slate-400 block uppercase">You</span>
+                            <p>Ans: <span class="font-semibold text-slate-900">${item.myAnswer}</span></p>
+                            <p>Guess: <span class="font-semibold text-slate-900">${item.myGuess}</span></p>
+                        </div>
+                        <div>
+                            <span class="font-bold text-slate-400 block uppercase">Partner</span>
+                            <p>Ans: <span class="font-semibold text-slate-900">${item.partnerAnswer}</span></p>
+                            <p>Guess: <span class="font-semibold text-slate-900">${item.partnerGuess}</span></p>
+                        </div>
+                    </div>
+                `;
+            historyContainer.appendChild(card);
+        });
+
+        switchScreen(screenGameover);
+    }
+
+    btnRestart.addEventListener('click', () => {
+        conn.send({ type: 'RETURN_TO_CATEGORY' });
+        showCategoryScreen();
+    });
+</script>
+</body>
+</html>
